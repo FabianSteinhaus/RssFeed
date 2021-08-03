@@ -214,3 +214,5 @@ default.profraw
 *.dll
 obj/Debug/net5.0/RssFeed.csproj.AssemblyReference.cache
 obj/Debug/net5.0/RssFeed.csproj.FileListAbsolute.txt
+*.cache
+*.v2
