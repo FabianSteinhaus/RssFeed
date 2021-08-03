@@ -27,12 +27,12 @@ namespace RssFeed.Services
 
         }
 
-        public List<Feed> Get()
+        public List<Feed> GetAllFromDb()
         {
             return _feeds.AsQueryable().ToList();
         }
 
-        public Feed Get(string id) =>
+        public Feed GetArticleFromDb(string id) =>
             _feeds.Find(feed => feed.Id == id).FirstOrDefault();
 
         public Feed Create(Feed feed)
@@ -46,13 +46,14 @@ namespace RssFeed.Services
             //feedNew.UpdateDate = feedNew.UpdateDate?.ToUniversalTime();
             _feeds.ReplaceOne(feed => feed.Id == id, feedNew);
 
-            return Get(id);
+            return GetArticleFromDb(id);
         }
 
         public void Remove(string id)
         {
             _feeds.DeleteOne(feed => feed.Id == id);
         }
+
 
         public int GetNumberOfArticles(Feed feed)
         {
@@ -67,18 +68,22 @@ namespace RssFeed.Services
                 using (XmlReader reader = XmlReader.Create(feed.Url))
                 {
                     feed.NumberOfArticles = SyndicationFeed.Load(reader).Items.Count();
+                    Update(feed.Id, feed);
                     return feed.NumberOfArticles;
                 }
             }
-
             else
             {
                 return 1;
-            }
-           
-            
-                
-            
+            } 
+        }
+
+        public DateTime? GetUpdateDate(Feed feed)
+        {
+            DateTime? NowUpdateDate = DateTime.Now;
+            feed.UpdateDate = NowUpdateDate.Value;
+            Update(feed.Id, feed);
+            return feed.UpdateDate;
         }
 
 

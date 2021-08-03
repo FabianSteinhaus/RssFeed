@@ -1,8 +1,9 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RssFeed.Models
 {
@@ -32,5 +33,9 @@ namespace RssFeed.Models
 
         [Display(Name = "Number of Articles")]
         public int NumberOfArticles { get; set; }
+
+        public List<Feed> Feeds { get; set; }
+
+        public SelectList Categorys { get; set; }
     }
 }

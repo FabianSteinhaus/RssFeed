@@ -21,7 +21,6 @@ namespace RssFeed.Models
 
         [BsonElement("Name")]
         [Display(Name = "Article Name")]
-        [StringLength(60, MinimumLength = 2)]
         [Required]
         public string ArticleName { get; set; }
 
@@ -42,7 +41,14 @@ namespace RssFeed.Models
         [Display(Name = "Feed Url")]
         public string FeedUrl { get; set; }
 
+        [Display(Name = "Feed Name")]
+        public string FeedName { get; set; }
+
         public string Description { get; set; }
+
+        public bool IsFavorite { get; set; }
+
+      
 
     }
 }

@@ -37,12 +37,12 @@ namespace RssFeed.Services
             _articles = database.GetCollection<Article>(settings.ArticleCollectionName);
         }
 
-        public List<Article> Get()
+        public List<Article> GetAllFromDb()
         {                                                    
             return _articles.AsQueryable().ToList();
         }
 
-        public Article Get(string id) => _articles.Find(article => article.Id == id).FirstOrDefault();
+        public Article GetArticleFromDb(string id) => _articles.Find(article => article.Id == id).FirstOrDefault();
 
         public Article Create(Article article)
         {
@@ -54,7 +54,7 @@ namespace RssFeed.Services
         {                                    
             _articles.ReplaceOne(article => article.Id == id, articleNew);
 
-            return Get(id);
+            return GetArticleFromDb(id);
         }
 
         public void Remove(string id)
@@ -66,10 +66,10 @@ namespace RssFeed.Services
 
         public void Reload(Feed feed)
         {
-            
             WebClient wclient = new WebClient();
             string RssData = wclient.DownloadString(feed.Url);
             XDocument xml = XDocument.Parse(RssData);
+
            
 
 
@@ -94,7 +94,13 @@ namespace RssFeed.Services
 
             foreach (var article in RSSFeedData)
             {
-               article.FeedUrl = feed.Url;
+                article.FeedUrl = feed.Url;
+                article.FeedName = feed.FeedName;
+
+                if (article.Category == null)
+                {
+                    article.Category = feed.Category;
+                }
 
                 var articleExists = IsArticleExist(article);
                 var articleValid = IsArticleValid(article);
@@ -113,8 +119,8 @@ namespace RssFeed.Services
         /// <returns></returns>
         private bool IsArticleExist(Article article)
         {
-            var articles = Get();
-            var articleExists = articles.Exists(x => x.Link == article.Link);
+            var articles = GetAllFromDb();
+            bool articleExists = articles.Exists(x => x.Link == article.Link);
 
             if (articleExists)
             {
@@ -165,9 +171,17 @@ namespace RssFeed.Services
             foreach (var article in RSSFeedData)
             {
                 article.FeedUrl = feed.Url;
-                var articleExists = IsArticleExist(article);
+                article.FeedName = feed.FeedName;
 
-                if (!articleExists && article.Description != "" && article.ArticleName != "")
+                if (article.Category == null)
+                {
+                    article.Category = feed.Category;
+                }
+
+                var articleExists = IsArticleExist(article);
+                var articleValid = IsArticleValid(article);
+
+                if (!articleExists && articleValid)
                 {
                     Create(article);
                 }
